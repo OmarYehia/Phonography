@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./src/routes/authRoutes");
+const { requireAuth } = require("./src/middleware/authMiddleware");
 require("dotenv").config();
 
 const app = express();
@@ -28,7 +29,7 @@ mongoose
   });
 
 // Routes
-app.get("/", (req, res) => {
+app.get("/", requireAuth, (req, res) => {
   res.send("API is working");
 });
 app.use(authRoutes);

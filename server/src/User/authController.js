@@ -78,7 +78,9 @@ module.exports.signup_post = async (req, res) => {
   }
 };
 
-module.exports.login_get = (req, res) => {};
+module.exports.login_get = (req, res) => {
+  res.send("Login");
+};
 
 module.exports.login_post = async (req, res) => {
   const { email, password } = req.body;
