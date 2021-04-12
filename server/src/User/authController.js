@@ -39,6 +39,7 @@ module.exports.signup_get = (req, res) => {
 
 module.exports.signup_post = async (req, res) => {
   const { name, email, password, phone_number, country } = req.body;
+
   try {
     const user = await User.create({
       name,
@@ -49,12 +50,12 @@ module.exports.signup_post = async (req, res) => {
     });
 
     const token = createToken(user._id, user.isAdmin);
-    res.cookies("jwt", token, {
+    res.cookie("jwt", token, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
 
-    // Hadnle, Application
+    // Handle, Application
     res.status(201).json({ user: user._id });
   } catch (err) {
     const errors = handleErrors(err);
