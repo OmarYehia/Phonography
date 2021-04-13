@@ -27,8 +27,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Country is required"],
   },
-  isAdmin: {
-    type: Boolean,
+  role: {
+    type: String,
+    default: "member",
+    enum: ["member", "admin"],
   },
 });
 

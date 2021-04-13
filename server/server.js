@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./src/routes/authRoutes");
-const { requireAuth } = require("./src/middleware/authMiddleware");
+const { requireAuth, grantAccess } = require("./src/middleware/authMiddleware");
 require("dotenv").config();
 
 const app = express();
@@ -29,7 +29,9 @@ mongoose
   });
 
 // Routes
-app.get("/", requireAuth, (req, res) => {
+// This is just a test route to test access and auth
+// https://soshace.com/implementing-role-based-access-control-in-a-node-js-application/ ---> for RBAC reference
+app.get("/", requireAuth, grantAccess("readAny", "profile"), (req, res) => {
   res.send("API is working");
 });
 app.use(authRoutes);

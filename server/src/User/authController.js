@@ -37,14 +37,14 @@ const handleErrors = (err) => {
   return errors;
 };
 
-const createToken = (id, isAdmin) => {
-  return jwt.sign({ id, isAdmin }, process.env.SECRET_TOKEN, {
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.SECRET_TOKEN, {
     expiresIn: 24 * 60 * 60,
   });
 };
 
 const sendJWTCookie = (user, res) => {
-  const token = createToken(user._id, user.isAdmin);
+  const token = createToken(user._id);
   res.cookie("jwt", token, {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
@@ -68,8 +68,6 @@ module.exports.signup_post = async (req, res) => {
     });
 
     sendJWTCookie(user, res);
-
-    // TODO to handle how mobile application will receive the token
 
     res.status(201).json({ user: user._id });
   } catch (err) {
