@@ -30,7 +30,7 @@ const requireAuth = async (req, res, next) => {
 const grantAccess = (action, resource) => {
   return async (req, res, next) => {
     try {
-      const user = await User.findById(req.decodedToken.id);
+      const user = await User.findById(req.decodedToken.userId);
       const permission = roles.can(user.role)[action](resource);
 
       if (!permission.granted) {
@@ -39,6 +39,7 @@ const grantAccess = (action, resource) => {
         next();
       }
     } catch (err) {
+      console.log(err);
       res.status(500).json({ success: false, errors: { message: err } });
     }
   };

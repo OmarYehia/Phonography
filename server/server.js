@@ -31,7 +31,7 @@ mongoose
 // Routes
 // This is just a test route to test access and auth
 // https://soshace.com/implementing-role-based-access-control-in-a-node-js-application/ ---> for RBAC reference
-app.get("/", requireAuth, grantAccess("readAny", "profile"), (req, res) => {
+app.get("/", requireAuth, grantAccess("updateAny", "member"), (req, res) => {
   res.send("API is working");
 });
 app.use(authRoutes);

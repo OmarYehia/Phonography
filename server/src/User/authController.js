@@ -37,14 +37,14 @@ const handleErrors = (err) => {
   return errors;
 };
 
-const createToken = (id) => {
-  return jwt.sign({ id }, process.env.SECRET_TOKEN, {
+const createToken = (data) => {
+  return jwt.sign(data, process.env.SECRET_TOKEN, {
     expiresIn: 24 * 60 * 60,
   });
 };
 
 const sendSuccessResponse = (res, code, data) => {
-  const token = createToken(data.userId);
+  const token = createToken({ userId: data.userId, role: data.role });
   res.status(code).json({
     success: true,
     data: { ...data, token },
@@ -70,7 +70,7 @@ module.exports.signup_post = async (req, res) => {
       country,
     });
 
-    sendSuccessResponse(res, 201, { userId: user._id });
+    sendSuccessResponse(res, 201, { userId: user._id, role: user.role });
   } catch (err) {
     const errors = handleErrors(err);
     sendFailureResponse(res, 400, errors);
@@ -82,7 +82,7 @@ module.exports.login_post = async (req, res) => {
 
   try {
     const user = await User.login(email, password);
-    sendSuccessResponse(res, 200, { userId: user._id });
+    sendSuccessResponse(res, 200, { userId: user._id, role: user.role });
   } catch (err) {
     const errors = handleErrors(err);
     sendFailureResponse(res, 400, errors);
