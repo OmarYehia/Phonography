@@ -18,6 +18,7 @@ const requireAuth = async (req, res, next) => {
         // Token is not valid
         res.status(401).json({ success: false, errors: { message: "unauthenticated" } });
       } else {
+        req.decodedToken = decodedToken;
         next();
       }
     });
@@ -27,36 +28,19 @@ const requireAuth = async (req, res, next) => {
 };
 
 const grantAccess = (action, resource) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     try {
-      var token = req.headers.authentication.split(" ")[1];
-    } catch (error) {
-      res
-        .status(401)
-        .json({ success: false, errors: { message: "Authentication header missing" } });
-      return;
-    }
+      const user = await User.findById(req.decodedToken.id);
+      const permission = roles.can(user.role)[action](resource);
 
-    jwt.verify(token, process.env.SECRET_TOKEN, async (err, decodedToken) => {
-      if (err) {
-        // Token is not valid
-        res.status(401).json({ success: false, errors: { message: "unauthenticated" } });
+      if (!permission.granted) {
+        res.status(403).json({ success: false, errors: { message: "forbidden" } });
       } else {
-        try {
-          const user = await User.findById(decodedToken.id);
-
-          const permission = roles.can(user.role)[action](resource);
-
-          if (!permission.granted) {
-            res.status(403).json({ success: false, errors: { message: "forbidden" } });
-          } else {
-            next();
-          }
-        } catch (err) {
-          res.status(500).json({ success: false, errors: { message: err } });
-        }
+        next();
       }
-    });
+    } catch (err) {
+      res.status(500).json({ success: false, errors: { message: err } });
+    }
   };
 };
 
