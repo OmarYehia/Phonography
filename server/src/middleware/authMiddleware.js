@@ -45,4 +45,15 @@ const grantAccess = (action, resource) => {
   };
 };
 
-module.exports = { requireAuth, grantAccess };
+const canPerformAction = (req, res, next) => {
+  if (req.params.id !== req.decodedToken.userId) {
+    res.status(403).json({
+      success: false,
+      errors: { message: "You're not authorized to perform this action" },
+    });
+  } else {
+    next();
+  }
+};
+
+module.exports = { requireAuth, grantAccess, canPerformAction };
