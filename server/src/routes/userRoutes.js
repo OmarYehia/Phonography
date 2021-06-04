@@ -21,11 +21,11 @@ router.post(
   grantAccess("updateAny", "profile"),
   userController.make_admin
 );
-// router.delete(
-//   "/admins/:id",
-//   requireAuth,
-//   grantAccess("updateAny", "profile"),
-//   userController.remove_dmin
-// );
+router.delete(
+  "/admins/:id",
+  requireAuth,
+  grantAccess("updateAny", "profile"),
+  userController.remove_admin
+);
 
 module.exports = router;
