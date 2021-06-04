@@ -15,12 +15,12 @@ router.delete(
 );
 
 router.get("/admins", requireAuth, grantAccess("readAny", "profile"), userController.get_admins);
-// router.post(
-//   "/admins/:id",
-//   requireAuth,
-//   grantAccess("updateAny", "profile"),
-//   userController.make_admin
-// );
+router.post(
+  "/admins/:id",
+  requireAuth,
+  grantAccess("updateAny", "profile"),
+  userController.make_admin
+);
 // router.delete(
 //   "/admins/:id",
 //   requireAuth,

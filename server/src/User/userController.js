@@ -121,3 +121,37 @@ module.exports.get_admins = async (req, res) => {
     });
   }
 };
+
+module.exports.make_admin = async (req, res) => {
+  try {
+    let user = await User.findById(req.params.id);
+
+    if (!user) throw Error("Not found");
+
+    if (user.role !== "admin") {
+      user.updateOne({ $set: { role: "admin" } }, { new: true, exclude });
+
+      res.status(202).json({
+        success: true,
+        data: { message: "User is now an admin" },
+      });
+    } else {
+      res.status(202).json({
+        success: false,
+        errors: { message: "User is already an admin" },
+      });
+    }
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "User not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+  }
+};
