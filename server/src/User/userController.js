@@ -104,3 +104,20 @@ module.exports.delete_user = async (req, res) => {
     }
   }
 };
+
+module.exports.get_admins = async (req, res) => {
+  try {
+    const admins = await User.find({ role: "admin" }, exclude);
+
+    res.status(200).json({
+      success: true,
+      numberOfRecords: admins.length,
+      data: { admins },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};

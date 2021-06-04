@@ -4,9 +4,9 @@ const User = require("../User/User");
 
 const requireAuth = async (req, res, next) => {
   try {
-    var token = req.headers.authentication.split(" ")[1];
+    var token = req.headers.authorization.split(" ")[1];
   } catch (error) {
-    res.status(401).json({ success: false, errors: { message: "Authentication header missing" } });
+    res.status(401).json({ success: false, errors: { message: "Authorization header missing" } });
     return;
   }
 

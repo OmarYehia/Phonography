@@ -14,7 +14,7 @@ router.delete(
   userController.delete_user
 );
 
-// router.get("/admins", requireAuth, grantAccess("readAny", "profile"), userController.get_admins);
+router.get("/admins", requireAuth, grantAccess("readAny", "profile"), userController.get_admins);
 // router.post(
 //   "/admins/:id",
 //   requireAuth,
