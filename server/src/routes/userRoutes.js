@@ -7,12 +7,12 @@ const router = Router();
 router.get("/users", userController.all);
 router.get("/users/:id", userController.get_user);
 router.put("/users/:id", requireAuth, canPerformAction, userController.update_user);
-// router.delete(
-//   "/users/:id",
-//   requireAuth,
-//   grantAccess("updateAny", "profile"),
-//   userController.delete_user
-// );
+router.delete(
+  "/users/:id",
+  requireAuth,
+  grantAccess("updateAny", "profile"),
+  userController.delete_user
+);
 
 // router.get("/admins", requireAuth, grantAccess("readAny", "profile"), userController.get_admins);
 // router.post(

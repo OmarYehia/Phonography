@@ -50,14 +50,6 @@ module.exports.get_user = async (req, res) => {
 };
 
 module.exports.update_user = async (req, res) => {
-  if (req.params.id !== req.decodedToken.userId) {
-    res.status(403).json({
-      success: false,
-      errors: { message: "You're not authorized to perform this action" },
-    });
-    return;
-  }
-
   try {
     const { name, email, phone_number, country } = req.body;
 
@@ -68,9 +60,35 @@ module.exports.update_user = async (req, res) => {
     );
 
     if (!user) throw Error("Not found");
+
     res.status(202).json({
       success: true,
       data: { user },
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "User not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+  }
+};
+
+module.exports.delete_user = async (req, res) => {
+  try {
+    const user = await User.findOneAndDelete({ _id: req.params.id });
+
+    if (!user) throw Error("Not found");
+
+    res.status(202).json({
+      success: true,
+      data: { message: "User deleted successfully" },
     });
   } catch (error) {
     if (error.kind === "ObjectId" || error.message === "Not found") {
