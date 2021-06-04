@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./src/routes/authRoutes");
 const competitionRoutes = require("./src/routes/competitionRoutes");
+const userRoutes = require("./src/routes/userRoutes");
 const { requireAuth, grantAccess } = require("./src/middleware/authMiddleware");
 require("dotenv").config();
 
@@ -21,6 +22,7 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
   })
   .then((result) => {
     app.listen(port, () => console.log(`Server is listening on port ${port}`));
@@ -37,3 +39,4 @@ app.get("/", requireAuth, grantAccess("updateAny", "member"), (req, res) => {
 });
 app.use(authRoutes);
 app.use(competitionRoutes);
+app.use(userRoutes);
