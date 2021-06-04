@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./src/routes/authRoutes");
+const competitionRoutes = require("./src/routes/competitionRoutes");
 const { requireAuth, grantAccess } = require("./src/middleware/authMiddleware");
 require("dotenv").config();
 
@@ -35,3 +36,4 @@ app.get("/", requireAuth, grantAccess("updateAny", "member"), (req, res) => {
   res.send("API is working");
 });
 app.use(authRoutes);
+app.use(competitionRoutes);
