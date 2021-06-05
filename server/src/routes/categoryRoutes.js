@@ -47,6 +47,13 @@ router.post(
 router.get("/categories/:id", categoryController.get_category);
 
 // Update Category
+router.put(
+  "/categories/:id",
+  requireAuth,
+  grantAccess("updateAny", "category"),
+  upload.single("categoryImage"),
+  categoryController.update_category
+);
 
 // Delete category
 

@@ -7,7 +7,10 @@ const handleErrors = (err) => {
   };
 
   // Validation errors
-  if (err.message.includes("category validation failed")) {
+  if (
+    err.message.includes("category validation failed") ||
+    err.message.includes("Validation failed")
+  ) {
     Object.values(err.errors).forEach(({ properties }) => {
       errors[properties.path] = properties.message;
     });
@@ -19,6 +22,7 @@ const handleErrors = (err) => {
 // This is to exclude some fields from being returned in response
 const exclude = { __v: 0 };
 
+// Retrieving all categories
 module.exports.all = async (req, res) => {
   try {
     const categories = await Category.find({}, exclude);
@@ -35,6 +39,7 @@ module.exports.all = async (req, res) => {
   }
 };
 
+// Create a category
 module.exports.create = async (req, res) => {
   try {
     const category = await Category.create({
@@ -55,6 +60,7 @@ module.exports.create = async (req, res) => {
   }
 };
 
+// Retrieve a single category
 module.exports.get_category = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id, exclude);
@@ -70,6 +76,45 @@ module.exports.get_category = async (req, res) => {
       res.status(404).json({
         success: false,
         errors: { message: "Category not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+  }
+};
+
+// Update a category
+module.exports.update_category = async (req, res) => {
+  try {
+    const name = req.body.name;
+    const image = req.file ? `${process.env.BASE_URL}/${req.file.path}` : null;
+
+    const category = await Category.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: { name, image } },
+      { new: true, projection: exclude, runValidators: true }
+    );
+
+    if (!category) throw Error("Not found");
+
+    res.status(202).json({
+      success: true,
+      data: { category },
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "Category not found" },
+      });
+    } else if (error.message.includes("Validation failed")) {
+      const errors = handleErrors(error);
+      res.status(400).json({
+        success: false,
+        errors,
       });
     } else {
       res.status(500).json({
