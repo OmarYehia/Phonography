@@ -16,9 +16,12 @@ const handleErrors = (err) => {
   return errors;
 };
 
+// This is to exclude some fields from being returned in response
+const exclude = { __v: 0 };
+
 module.exports.all = async (req, res) => {
   try {
-    const categories = await Category.find({}, { __v: 0 });
+    const categories = await Category.find({}, exclude);
     res.status(200).json({
       success: true,
       numberOfRecords: categories.length,
@@ -49,5 +52,30 @@ module.exports.create = async (req, res) => {
       success: false,
       errors,
     });
+  }
+};
+
+module.exports.get_category = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id, exclude);
+
+    if (!category) throw Error("Not found");
+
+    res.status(200).json({
+      success: true,
+      data: { category },
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "Category not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
   }
 };

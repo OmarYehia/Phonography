@@ -44,6 +44,7 @@ router.post(
 );
 
 // Get Category
+router.get("/categories/:id", categoryController.get_category);
 
 // Update Category
 
