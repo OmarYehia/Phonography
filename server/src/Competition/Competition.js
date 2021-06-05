@@ -57,6 +57,9 @@ competitionSchema.path('winner').validate((value, respond) => {
     return refIsValid(value, respond, User);
 }, 'Invalid winner.');
 
+competitionSchema.path('competitors').validate((value, respond) => {
+  return refIsValid(value[value.length-1], respond, User);
+}, 'Invalid competitor.');
 
 
 
