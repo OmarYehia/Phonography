@@ -106,10 +106,39 @@ const delete_competition = async (req, res) => {
     }       
    
 }
+const update_competition = async (req,res) => {
+  const { name, sponsor, startDate, endDate, prizes} = req.body;
+  try{
+    const competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      { $set: { name, sponsor, startDate, endDate, prizes} },
+      { new: true, runValidators: true }
+    );
+    
+    if (!competition) throw Error("Not found");
+
+    res.status(202).json({
+      Success: true,
+      data: { competition }
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "competition not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+
+  }    
+}
 
 const join_competitor_into_competition = async (req,res) => {
   try{
-    console.log(req.body.competitors, req.params.id)
     const competition = await Competition.findByIdAndUpdate(
       req.params.id,
       { $push: { competitors: req.body.competitors } },
@@ -175,6 +204,7 @@ module.exports = {
     get_all_competitions,
     get_competition_by_id,
     delete_competition,
+    update_competition,
     join_competitor_into_competition,
     assign_winner_of_competition
 
