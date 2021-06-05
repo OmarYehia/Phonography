@@ -10,7 +10,7 @@ const handleErrors = (err) => {
       prizes:"",
       winner:"",
     };
-    
+
     // Validation errors
     if (err.message.includes("Competition validation failed")) {
       Object.values(err.errors).forEach(({ properties }) => {
@@ -140,17 +140,13 @@ const update_competition = async (req,res) => {
 
 const join_competitor_into_competition = async (req,res) => {  
   try{
-    const competition = await Competition.findById(req.params.id);
-
-    if (!competition) throw Error("Not found");
-
-    const competitors = competition.competitors;
-
-    const obj = await competition.updateOne(
-      { $set: { competitors: [...competitors, req.body.competitors ] } },
+    const competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      { $push: { competitors:  req.decodedToken.userId  } },
       { new: true, runValidators: true }
-    );
-    
+      );
+
+    if (!competition) throw Error("Not found");    
     
     res.status(202).json({
       Success: true,
