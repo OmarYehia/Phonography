@@ -32,9 +32,9 @@ const upload = multer({
 const router = Router();
 
 // Get Categories
+router.get("/categories", categoryController.all);
 
-// Get Category
-
+// Create category
 router.post(
   "/categories",
   requireAuth,
@@ -42,6 +42,8 @@ router.post(
   upload.single("categoryImage"),
   categoryController.create
 );
+
+// Get Category
 
 // Update Category
 

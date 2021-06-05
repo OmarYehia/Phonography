@@ -16,6 +16,22 @@ const handleErrors = (err) => {
   return errors;
 };
 
+module.exports.all = async (req, res) => {
+  try {
+    const categories = await Category.find({}, { __v: 0 });
+    res.status(200).json({
+      success: true,
+      numberOfRecords: categories.length,
+      data: { categories },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};
+
 module.exports.create = async (req, res) => {
   try {
     const category = await Category.create({
