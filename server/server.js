@@ -1,9 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const authRoutes = require("./src/routes/authRoutes");
 const competitionRoutes = require("./src/routes/competitionRoutes");
+const categoryRoutes = require("./src/routes/categoryRoutes");
 const userRoutes = require("./src/routes/userRoutes");
+const postRoutes = require("./src/routes/postRoutes");
 const { requireAuth, grantAccess } = require("./src/middleware/authMiddleware");
 require("dotenv").config();
 
@@ -13,6 +16,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
+app.use("/uploads", express.static("uploads"));
 
 //database conneciton
 const port = process.env.PORT || 3001;
@@ -40,3 +45,5 @@ app.get("/", requireAuth, grantAccess("updateAny", "member"), (req, res) => {
 app.use(authRoutes);
 app.use(competitionRoutes);
 app.use(userRoutes);
+app.use(categoryRoutes);
+app.use(postRoutes);

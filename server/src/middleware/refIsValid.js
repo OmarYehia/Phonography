@@ -5,6 +5,7 @@ module.exports = (value, respond, modelName) => {
         .countDocuments({ _id: value })
         .exec()
         .then(function(count) {
+            console.log(count);
             return count > 0;
         })
         .catch(function(err) {
