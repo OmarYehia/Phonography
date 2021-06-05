@@ -103,17 +103,47 @@ const delete_competition = async (req, res) => {
             errors: { message: error.message },
           });
         }
-      }
-    
-        
+      }       
+  }
 
-       
+  const insert_competitor_into_competition = async (req,res) =>{
+    
+    try{
+      console.log(req.body.competitors, req.params.id)
+      const competition = await Competition.findByIdAndUpdate(
+        req.params.id,
+        { $push: { competitors: req.body.competitors } },
+        { new: true, runValidators: true }
+      );
+      
+      if (!competition) throw Error("Not found");
+  
+      res.status(202).json({
+        Success: true,
+        data: { competition }
+      });
+    } catch (error) {
+      if (error.kind === "ObjectId" || error.message === "Not found") {
+        res.status(404).json({
+          success: false,
+          errors: { message: "competition not found" },
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          errors: { message: error.message },
+        });
+      }
+
+    } 
+
   }
 
 module.exports = {
     create_competition,
     get_all_competitions,
     get_competition_by_id,
-    delete_competition
+    delete_competition,
+    insert_competitor_into_competition
 
   }
