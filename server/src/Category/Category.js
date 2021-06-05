@@ -5,10 +5,10 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: [true, "Category name is required"],
     minLength: [2, "Category name should be at least 2 characters long"],
+    unique: true,
   },
   image: {
-    type: Buffer,
-    contentType: String,
+    type: String,
     required: [true, "Please select an image"],
   },
 });

@@ -8,7 +8,8 @@ exports.roles = (function () {
     .extend("member")
     .readAny("profile", ["*", "!password"])
     .deleteAny("profile")
-    .updateAny("profile", ["role"]);
+    .updateAny("profile", ["role"])
+    .updateAny("category");
 
   return ac;
 })();
