@@ -124,3 +124,28 @@ module.exports.update_category = async (req, res) => {
     }
   }
 };
+
+// Delete category
+module.exports.delete_category = async (req, res) => {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    if (!category) throw Error("Not found");
+
+    res.status(202).json({
+      success: true,
+      data: { message: "Category deleted" },
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "Category not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+  }
+};

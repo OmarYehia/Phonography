@@ -56,5 +56,11 @@ router.put(
 );
 
 // Delete category
+router.delete(
+  "/categories/:id",
+  requireAuth,
+  grantAccess("updateAny", "category"),
+  categoryController.delete_category
+);
 
 module.exports = router;
