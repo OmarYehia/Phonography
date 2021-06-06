@@ -11,6 +11,7 @@ router.delete("/competition/:id", competionController.delete_competition);
 router.put("/competition/:id", competionController.update_competition);
 router.put("/competition/join/:id", requireAuth, competionController.join_competitor_into_competition);
 router.put("/competition/assign/:id", competionController.assign_winner_of_competition);
+router.put("/competition/add-prizes/:id",competionController.add_prizes_for_competition);
 
 
 

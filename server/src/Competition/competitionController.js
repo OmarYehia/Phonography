@@ -196,8 +196,37 @@ const assign_winner_of_competition = async (req,res) => {
     }
 
   }    
+}
 
+const add_prizes_for_competition = async (req,res) => {
 
+  try{
+    const competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      {$push: {prizes: req.body.prizes}},
+      {new: true}
+      );
+
+    if(!competition) throw Error("Not Found");
+
+    res.status(202).json({
+      Success: true,
+      data: { competition }
+    });
+
+  }catch(error){
+    if(error.kind == "ObjectId" || error.message == "Not Found"){
+      res.status(404).json({
+        Success: false,
+        errors: {message: "Competition not found"}
+      });
+    }else{
+      res.status(500).json({
+        Sucess: false,
+        errors: { message: error.message }
+      });
+    }
+  }
 }
 
 module.exports = {
@@ -207,6 +236,7 @@ module.exports = {
     delete_competition,
     update_competition,
     join_competitor_into_competition,
-    assign_winner_of_competition
+    assign_winner_of_competition,
+    add_prizes_for_competition,
 
   }
