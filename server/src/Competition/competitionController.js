@@ -141,33 +141,43 @@ const update_competition = async (req,res) => {
 
 const join_competitor_into_competition = async (req,res) => {  
   try{
-    const competition = await Competition.findByIdAndUpdate(
-      req.params.id,
+    let competition = await Competition.findById(req.params.id);
+
+    if (!competition) throw Error("Not found");  
+
+    if(competition.competitors.includes(req.decodedToken.userId)) throw Error("Already exists")
+
+     competition = await Competition.findByIdAndUpdate(
+       req.params.id,
       { $push: { competitors:  req.decodedToken.userId  } },
       { new: true, runValidators: true }
-      );
-
-    if (!competition) throw Error("Not found");    
+      ); 
     
     res.status(202).json({
       Success: true,
-      data: { competition }
+      data: { message: "Competitor joined competition successfully "}
     });
   } catch (error) {
-    if (error.kind === "ObjectId" || error.message === "Not found") {
-      res.status(404).json({
-        success: false,
-        errors: { message: "competition not found" },
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        errors: { message: error.message },
-      });
+      if (error.kind === "ObjectId" || error.message === "Not found") {
+        res.status(404).json({
+          success: false,
+          errors: { message: "competition not found" },
+        });
+      
+      } else if(error.message === "Already exists") {
+          res.status(400).json({
+            success: false,
+            errors: { message: "This competitor already exists in this competition" },
+          });
+        
+        } else {
+            res.status(500).json({
+              success: false,
+              errors: { message: error.message },
+            });  
+          }    
+
     }
-
-  }    
-
 }
 const get_all_competitors_of_competition = async (req,res) => {
     try {
@@ -177,7 +187,6 @@ const get_all_competitors_of_competition = async (req,res) => {
 
       const competitors = competition.competitors;
 
-     // if(!competitors) throw Error ("competitors Not found")
   
       res.status(200).json({
         success: true,
@@ -201,17 +210,24 @@ const get_all_competitors_of_competition = async (req,res) => {
 
 const remove_competitor_from_competition = async (req,res) => {
   try{
-    const competition = await Competition.findByIdAndUpdate(
+    let competition = await Competition.findById(req.params.id);
+
+    if (!competition) throw Error("Not found"); 
+
+
+    if(!(competition.competitors.includes(req.decodedToken.userId))) throw Error("competitor not found");
+
+    competition = await Competition.findByIdAndUpdate(
       req.params.id,
       { $pull: { competitors:  req.decodedToken.userId  } },
       { new: true, runValidators: true }
       );
 
-    if (!competition) throw Error("Not found");    
+       
     
     res.status(202).json({
       Success: true,
-      data: { competition }
+      data: {message: "Competitor removed from competition successfully"}
     });
   } catch (error) {
     if (error.kind === "ObjectId" || error.message === "Not found") {
@@ -219,15 +235,21 @@ const remove_competitor_from_competition = async (req,res) => {
         success: false,
         errors: { message: "competition not found" },
       });
-    } else {
-      res.status(500).json({
-        success: false,
-        errors: { message: error.message },
-      });
-    }
+    
+    } else if(error.message === "competitor not found") {
+        res.status(400).json({
+          success: false,
+          errors: { message: "This competitor isnot joining this competition" },
+        });
+      
+      } else {
+          res.status(500).json({
+            success: false,
+            errors: { message: error.message },
+          });  
+        }    
 
-  }    
-
+  }
 
 
 }
