@@ -197,8 +197,39 @@ const get_all_competitors_of_competition = async (req,res) => {
         });
       }
     }
+}
 
-  
+const remove_competitor_from_competition = async (req,res) => {
+  try{
+    const competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { competitors:  req.decodedToken.userId  } },
+      { new: true, runValidators: true }
+      );
+
+    if (!competition) throw Error("Not found");    
+    
+    res.status(202).json({
+      Success: true,
+      data: { competition }
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "competition not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+
+  }    
+
+
+
 }
 const assign_winner_of_competition = async (req,res) => {
   try{
@@ -269,6 +300,7 @@ module.exports = {
     update_competition,
     join_competitor_into_competition,
     get_all_competitors_of_competition,
+    remove_competitor_from_competition,
     assign_winner_of_competition,
     add_prizes_for_competition,
 
