@@ -29,7 +29,7 @@ const create_competition = async (req, res) => {
       res.status(201).json({
         Success: true,
         message: "Competition created successfully",
-         data: competition,
+         data: { competition },
 
       })
 

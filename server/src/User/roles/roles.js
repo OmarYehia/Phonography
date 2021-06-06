@@ -13,7 +13,8 @@ exports.roles = (function () {
     .readAny("profile", ["*", "!password"])
     .deleteAny("profile")
     .updateAny("profile", ["role"])
-    .updateAny("category");
+    .updateAny("category")
+    .updateAny("competition");
 
   return ac;
 })();
