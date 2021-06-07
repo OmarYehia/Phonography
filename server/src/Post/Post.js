@@ -19,6 +19,7 @@ const postSchema = new mongoose.Schema({
     likes: [{
         type: Schema.Types.ObjectId,
         ref: 'Like',
+        unique: true,
     }],
     comments: [{
         type: Schema.Types.ObjectId,
@@ -40,7 +41,7 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please select an image"],
     },
-});
+},{ timestamps: { createdAt: 'created_at' } });
 
 postSchema.path('author').validate((value, respond) => {
     return refIsValid(value, respond, User);
