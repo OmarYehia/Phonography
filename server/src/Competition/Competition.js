@@ -15,14 +15,14 @@ const competitionSchema = new Schema({
     required: [true, "Sponsor is required"],
   },
   startDate: {
-      type: Date,
+      type: String,
       required: [true, "Start date of competition is required"],
       validate: [isDate, "The entered date should be a valid date"],
       min: [Date.now, "The start date of the competition can't be in the past"]
 
   },
   endDate: {
-    type: Date,
+    type: String,
     required: [true, "End date of competition is required"],
     validate: [isDate, "The entered date should be a valid date"],
     min: [Date.now, "The end date of the competition can't be in the past"]

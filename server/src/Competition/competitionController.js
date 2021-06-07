@@ -7,9 +7,10 @@ const handleErrors = (err) => {
       startDate: "",
       endDate: "",
       competitors:"",
+      prizes:"",
       winner:"",
     };
-    
+
     // Validation errors
     if (err.message.includes("Competition validation failed")) {
       Object.values(err.errors).forEach(({ properties }) => {
@@ -28,7 +29,7 @@ const create_competition = async (req, res) => {
       res.status(201).json({
         Success: true,
         message: "Competition created successfully",
-         data: competition,
+         data: { competition },
 
       })
 
@@ -82,51 +83,20 @@ const get_all_competitions = async (req, res) => {
     }
 }
 const delete_competition = async (req, res) => {
-    try {
-      const competition = await Competition.findByIdAndDelete(req.params.id);
-  
-      if (!competition) throw Error("Not found");
+  try {
+    const competition = await Competition.findByIdAndDelete(req.params.id);
 
-      res.status(200).json({
-        Success: true,
-        message: "competition deleted successfully",
-      });
-    } catch (error) {
-        if (error.kind === "ObjectId" || error.message === "Not found") {
-          res.status(404).json({
-            success: false,
-            errors: { message: "Competition not found" },
-          });
-        } else {
-          res.status(500).json({
-            success: false,
-            errors: { message: error.message },
-          });
-        }
-      }       
-  }
+    if (!competition) throw Error("Not found");
 
-  const insert_competitor_into_competition = async (req,res) =>{
-    
-    try{
-      console.log(req.body.competitors, req.params.id)
-      const competition = await Competition.findByIdAndUpdate(
-        req.params.id,
-        { $push: { competitors: req.body.competitors } },
-        { new: true, runValidators: true }
-      );
-      
-      if (!competition) throw Error("Not found");
-  
-      res.status(202).json({
-        Success: true,
-        data: { competition }
-      });
-    } catch (error) {
+    res.status(200).json({
+      Success: true,
+      message: "competition deleted successfully",
+    });
+  } catch (error) {
       if (error.kind === "ObjectId" || error.message === "Not found") {
         res.status(404).json({
           success: false,
-          errors: { message: "competition not found" },
+          errors: { message: "Competition not found" },
         });
       } else {
         res.status(500).json({
@@ -134,16 +104,226 @@ const delete_competition = async (req, res) => {
           errors: { message: error.message },
         });
       }
+    }       
+   
+}
+const update_competition = async (req,res) => {
+  const { name, sponsor, startDate, endDate, prizes} = req.body;
+  try{
+    const competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      { $set: { name, sponsor, startDate, endDate, prizes} },
+      { new: true, runValidators: true }
+    );
+    
+    if (!competition) throw Error("Not found");
 
-    } 
+    res.status(202).json({
+      Success: true,
+      data: { competition }
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "competition not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+
+  }    
+}
+
+
+const join_competitor_into_competition = async (req,res) => {  
+  try{
+    let competition = await Competition.findById(req.params.id);
+
+    if (!competition) throw Error("Not found");  
+
+    if(competition.competitors.includes(req.decodedToken.userId)) throw Error("Already exists")
+
+     competition = await Competition.findByIdAndUpdate(
+       req.params.id,
+      { $push: { competitors:  req.decodedToken.userId  } },
+      { new: true, runValidators: true }
+      ); 
+    
+    res.status(202).json({
+      Success: true,
+      data: { message: "Competitor joined competition successfully "}
+    });
+  } catch (error) {
+      if (error.kind === "ObjectId" || error.message === "Not found") {
+        res.status(404).json({
+          success: false,
+          errors: { message: "competition not found" },
+        });
+      
+      } else if(error.message === "Already exists") {
+          res.status(400).json({
+            success: false,
+            errors: { message: "This competitor already exists in this competition" },
+          });
+        
+        } else {
+            res.status(500).json({
+              success: false,
+              errors: { message: error.message },
+            });  
+          }    
+
+    }
+}
+const get_all_competitors_of_competition = async (req,res) => {
+    try {
+      const competition = await Competition.findById(req.params.id);
+  
+      if (!competition) throw Error("Not found");
+
+      const competitors = competition.competitors;
+
+  
+      res.status(200).json({
+        success: true,
+        numberOfRecords: competitors.length,
+        data: { competitors },
+      });
+    } catch (error) {
+      if (error.kind === "ObjectId" || error.message === "Not found") {
+        res.status(404).json({
+          success: false,
+          errors: { message: "Competition not found" },
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          errors: { message: error.message },
+        });
+      }
+    }
+}
+
+const remove_competitor_from_competition = async (req,res) => {
+  try{
+    let competition = await Competition.findById(req.params.id);
+
+    if (!competition) throw Error("Not found"); 
+
+
+    if(!(competition.competitors.includes(req.decodedToken.userId))) throw Error("competitor not found");
+
+    competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { competitors:  req.decodedToken.userId  } },
+      { new: true, runValidators: true }
+      );
+
+       
+    
+    res.status(202).json({
+      Success: true,
+      data: {message: "Competitor removed from competition successfully"}
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "competition not found" },
+      });
+    
+    } else if(error.message === "competitor not found") {
+        res.status(400).json({
+          success: false,
+          errors: { message: "This competitor isnot joining this competition" },
+        });
+      
+      } else {
+          res.status(500).json({
+            success: false,
+            errors: { message: error.message },
+          });  
+        }    
 
   }
+
+
+}
+const assign_winner_of_competition = async (req,res) => {
+  try{
+    const competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      { $set: { winner: req.body.winner } },
+      { new: true, runValidators: true }
+    );
+    
+    if (!competition) throw Error("Not found");
+
+    res.status(202).json({
+      Success: true,
+      data: { competition }
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "competition not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+
+  }    
+}
+
+const add_prizes_for_competition = async (req,res) => {
+
+  try{
+    const competition = await Competition.findByIdAndUpdate(
+      req.params.id,
+      {$push: {prizes: req.body.prizes}},
+      {new: true}
+      );
+
+    if(!competition) throw Error("Not Found");
+
+    res.status(202).json({
+      Success: true,
+      data: { competition }
+    });
+
+  }catch(error){
+    if(error.kind == "ObjectId" || error.message == "Not Found"){
+      res.status(404).json({
+        Success: false,
+        errors: {message: "Competition not found"}
+      });
+    }else{
+      res.status(500).json({
+        Sucess: false,
+        errors: { message: error.message }
+      });
+    }
+  }
+}
 
 module.exports = {
     create_competition,
     get_all_competitions,
     get_competition_by_id,
     delete_competition,
-    insert_competitor_into_competition
+    update_competition,
+    join_competitor_into_competition,
+    get_all_competitors_of_competition,
+    remove_competitor_from_competition,
+    assign_winner_of_competition,
+    add_prizes_for_competition,
 
   }
