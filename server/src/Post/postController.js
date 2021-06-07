@@ -1,4 +1,6 @@
 const Post = require("./Post");
+const Comment = require("../Comment/Comment")
+const Like = require("../Like/Like")
 
 const handleErrors = (err) => {
   let errors = {
@@ -173,27 +175,30 @@ module.exports.remove_comment = (req, res) => {
 //   }
 // };
 
-// // Delete category
-// module.exports.delete_category = async (req, res) => {
-//   try {
-//     const category = await Category.findByIdAndDelete(req.params.id);
-//     if (!category) throw Error("Not found");
+// Delete post
+module.exports.delete_post = async (req, res) => {
+  try {
+    await Like.deleteMany({ liked_post: req.params.id })
+    await Comment.deleteMany({ commented_on_post: req.params.id })
+    const post = await Post.findByIdAndDelete(req.params.id);
 
-//     res.status(202).json({
-//       success: true,
-//       data: { message: "Category deleted" },
-//     });
-//   } catch (error) {
-//     if (error.kind === "ObjectId" || error.message === "Not found") {
-//       res.status(404).json({
-//         success: false,
-//         errors: { message: "Category not found" },
-//       });
-//     } else {
-//       res.status(500).json({
-//         success: false,
-//         errors: { message: error.message },
-//       });
-//     }
-//   }
-// };
+    if (!post) throw Error("Not found");
+
+    res.status(202).json({
+      success: true,
+      data: { message: "post deleted" },
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "post not found" },
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+  }
+};

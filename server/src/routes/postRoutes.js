@@ -46,5 +46,6 @@ router.get("/posts/:id", requireAuth, grantAccess("readOwn", "post"), postContro
 router.post("/posts", requireAuth, grantAccess("updateOwn", "post"), upload.single("postImage"), postController.create);
 router.delete("/posts/:postid/like/:likeid", requireAuth, postController.remove_like);
 router.delete("/posts/:postid/comment/:commentid", requireAuth, postController.remove_comment);
+router.delete("/posts/:id", requireAuth, postController.delete_post);
     
 module.exports = router;
