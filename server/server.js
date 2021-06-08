@@ -8,6 +8,8 @@ const categoryRoutes = require("./src/routes/categoryRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 const postRoutes = require("./src/routes/postRoutes");
 const friendshipRoutes = require("./src/routes/friendshipRoutes");
+const likeRoutes = require("./src/routes/likeRoutes");
+const commentRoutes = require("./src/routes/commentRoutes");
 const { requireAuth, grantAccess } = require("./src/middleware/authMiddleware");
 require("dotenv").config();
 
@@ -49,3 +51,5 @@ app.use(userRoutes);
 app.use(categoryRoutes);
 app.use(postRoutes);
 app.use(friendshipRoutes);
+app.use(likeRoutes);
+app.use(commentRoutes);

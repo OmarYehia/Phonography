@@ -9,7 +9,7 @@ const exclude = {
 
 module.exports.all = async (req, res) => {
   try {
-    const users = await User.find({}, exclude);
+    const users = await User.find({}, exclude).populate("following");
 
     res.status(200).json({
       success: true,
