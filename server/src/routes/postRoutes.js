@@ -47,5 +47,5 @@ router.post("/posts", requireAuth, grantAccess("updateOwn", "post"), upload.sing
 router.delete("/posts/:postid/like/:likeid", requireAuth, postController.remove_like);
 router.delete("/posts/:postid/comment/:commentid", requireAuth, postController.remove_comment);
 router.delete("/posts/:id", requireAuth, postController.delete_post);
-    
+router.put("/posts/:id", requireAuth, grantAccess("updateOwn", "post"), postController.update_post);
 module.exports = router;

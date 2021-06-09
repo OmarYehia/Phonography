@@ -4,7 +4,8 @@ const { requireAuth, grantAccess, canPerformAction } = require("../middleware/au
 
 const router = Router();
 
-// router.get("/posts", requireAuth, grantAccess("readOwn", "post"), likeController.all);
+router.get("/like/post/:postid", requireAuth, grantAccess("readOwn", "post"), likeController.all);
+
 router.post("/like", requireAuth, likeController.create);
 
 router.delete("/like/:id", requireAuth, likeController.remove_like);

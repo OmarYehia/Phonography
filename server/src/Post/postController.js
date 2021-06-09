@@ -1,6 +1,7 @@
 const Post = require("./Post");
 const Comment = require("../Comment/Comment")
 const Like = require("../Like/Like")
+const mongoose = require('mongoose')
 
 const handleErrors = (err) => {
   let errors = {
@@ -94,86 +95,150 @@ module.exports.get_post = async (req, res) => {
   }
 };
 
-module.exports.remove_like = (req, res) => {
+module.exports.remove_like = async (req, res) => {
   try {
-    Post.findOneAndUpdate(
-      req.params.postid,
-      { $pull: { likes: req.params.likeid } },
-      { new: true }
-    ).exec();
-    res.status(202).json({
-      success: true,
-      data: { message: "Like Removed" },
-    });
+    if (mongoose.Types.ObjectId.isValid(req.params.postid)) {
+      Post.findById(req.params.postid, async (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          if (!result) throw Error("Not found")
+
+          if (result.likes.includes(req.params.likeid)) {
+
+            Post.findOneAndUpdate(
+              req.params.postid,
+              { $pull: { likes: req.params.likeid } },
+              { new: true }
+            ).exec();
+
+            const like = await Like.findById(req.params.likeid);
+            like.remove();
+
+            res.status(202).json({
+              success: true,
+              data: { message: "Like Removed" },
+            })
+          }
+          else {
+            res.status(400).json({
+              success: false,
+              errors: { message: "Like not found" },
+            })
+          }
+
+        }
+      })
+    } else {
+      res.status(400).json({
+        success: false,
+        errors: { message: "Post not found" },
+      });
+    }
   } catch (error) {
-    const errors = handleErrors(error);
-    res.status(400).json({
-      success: false,
-      errors,
-    });
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(400).json({
+        success: false,
+        errors,
+      });
+    } else {
+      const errors = handleErrors(error);
+      res.status(400).json({
+        success: false,
+        errors,
+      });
+    }
   }
 }
 
 
 module.exports.remove_comment = (req, res) => {
   try {
-    Post.findOneAndUpdate(
-      req.params.postid,
-      { $pull: { comments: req.params.commentid } },
-      { new: true }
-    ).exec();
-    res.status(202).json({
-      success: true,
-      data: { message: "comment Removed" },
-    });
+    if (mongoose.Types.ObjectId.isValid(req.params.postid)) {
+      Post.findById(req.params.postid, async (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          if (!result) throw Error("Not found")
+          if (result.comments.includes(req.params.commentid)) {
+            Post.findOneAndUpdate(
+              req.params.postid,
+              { $pull: { comments: req.params.commentid } },
+              { new: true }
+            ).exec();
+            const comment = await Comment.findByIdAndDelete(req.params.commentid);
+            res.status(202).json({
+              success: true,
+              data: { message: "Comment Removed" },
+            })
+          } else {
+            res.status(400).json({
+              success: false,
+              errors: { message: "Comment not found" },
+            });
+          }
+        }
+      })
+    } else {
+      res.status(400).json({
+        success: false,
+        errors: { message: "Post not found" },
+      });
+    }
   } catch (error) {
-    const errors = handleErrors(error);
-    res.status(400).json({
-      success: false,
-      errors,
-    });
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(400).json({
+        success: false,
+        errors: { message: "Comment not found" },
+      })
+    } else {
+      console.log(error);
+      const errors = handleErrors(error);
+      res.status(400).json({
+        success: false,
+        errors,
+      });
+    }
   }
-
 }
 
 // // Update a category
-// module.exports.update_category = async (req, res) => {
-//   try {
-//     const name = req.body.name;
-//     const image = req.file ? `${process.env.BASE_URL}/${req.file.path}` : null;
+module.exports.update_post = async (req, res) => {
+  try {
+    const caption = req.body.caption;
 
-//     const category = await Category.findOneAndUpdate(
-//       { _id: req.params.id },
-//       { $set: { name, image } },
-//       { new: true, projection: exclude, runValidators: true }
-//     );
+    const post = await Post.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: { caption } },
+      { new: true, projection: exclude, runValidators: true }
+    );
 
-//     if (!category) throw Error("Not found");
+    if (!post) throw Error("Not found");
 
-//     res.status(202).json({
-//       success: true,
-//       data: { category },
-//     });
-//   } catch (error) {
-//     if (error.kind === "ObjectId" || error.message === "Not found") {
-//       res.status(404).json({
-//         success: false,
-//         errors: { message: "Category not found" },
-//       });
-//     } else if (error.message.includes("Validation failed")) {
-//       const errors = handleErrors(error);
-//       res.status(400).json({
-//         success: false,
-//         errors,
-//       });
-//     } else {
-//       res.status(500).json({
-//         success: false,
-//         errors: { message: error.message },
-//       });
-//     }
-//   }
-// };
+    res.status(202).json({
+      success: true,
+      data: { post },
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(404).json({
+        success: false,
+        errors: { message: "Category not found" },
+      });
+    } else if (error.message.includes("Validation failed")) {
+      const errors = handleErrors(error);
+      res.status(400).json({
+        success: false,
+        errors,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        errors: { message: error.message },
+      });
+    }
+  }
+};
 
 // Delete post
 module.exports.delete_post = async (req, res) => {
