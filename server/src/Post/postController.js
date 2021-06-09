@@ -1,6 +1,6 @@
+const Like = require("../Like/Like")
 const Post = require("./Post");
 const Comment = require("../Comment/Comment")
-const Like = require("../Like/Like")
 const mongoose = require('mongoose')
 
 const handleErrors = (err) => {
@@ -72,8 +72,7 @@ module.exports.create = async (req, res) => {
 // Retrieve a single post
 module.exports.get_post = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id, exclude);
-    console.log(post.likes[0]);
+    const post = await Post.findById(req.params.id, exclude).populate("likes comments");
     if (!post) throw Error("Not found");
 
     res.status(200).json({
@@ -95,6 +94,73 @@ module.exports.get_post = async (req, res) => {
   }
 };
 
+module.exports.like_post = (req, res) => {
+  Post.findById(req.params.postid, (err, post) => {
+    if (post) {
+      if (post.likes.includes(req.decodedToken.userId)) {
+        res.status(400).json({
+          success: false,
+          errors: { message: "User liked this post already" },
+        })
+      } else {
+        post.likes.push(req.decodedToken.userId);
+        post.save();
+        res.status(201).json({
+          success: true,
+          data: { post },
+        });
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        errors: { message: "Post not found" },
+      })
+    }
+  }
+  )
+}
+
+module.exports.unlike_post = (req, res) => {
+  try {
+    Post.findById(req.params.postid, async (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        try {
+          if (!result) throw new Error("Not found")
+          if (!result.likes.includes(req.decodedToken.userId)) throw new Error("Alread removed like")
+          Post.findOneAndUpdate(
+            req.params.postid,
+            { $pull: { likes: req.decodedToken.userId } }
+          ).exec();
+
+          res.status(202).json({
+            success: true,
+            data: { message: "Like Removed" },
+          })
+        } catch (err) {
+          res.status(400).json({
+            success: false,
+            errors: { error: err.message },
+          });
+        }
+      }
+    })
+  } catch (error) {
+    console.log(error);
+    if (error.kind === "ObjectId" || error.message === "Not found") {
+      res.status(400).json({
+        success: false,
+        errors: { error: error.message },
+      });
+    }
+    res.status(400).json({
+      success: true,
+      errors: error,
+    })
+  }
+}
+
 module.exports.remove_like = async (req, res) => {
   try {
     if (mongoose.Types.ObjectId.isValid(req.params.postid)) {
@@ -108,8 +174,7 @@ module.exports.remove_like = async (req, res) => {
             if (result.likes.includes(like._id)) {
               Post.findOneAndUpdate(
                 req.params.postid,
-                { $pull: { likes: like._id } },
-                { new: true }
+                { $pull: { likes: like._id } }
               ).exec();
 
               like.remove();
@@ -150,6 +215,7 @@ module.exports.remove_like = async (req, res) => {
     }
   }
 }
+
 
 
 module.exports.remove_comment = (req, res) => {

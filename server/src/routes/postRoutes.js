@@ -48,4 +48,7 @@ router.delete("/posts/:postid/remove-like", requireAuth, postController.remove_l
 router.delete("/posts/:postid/comment/:commentid", requireAuth, postController.remove_comment);
 router.delete("/posts/:id", requireAuth, postController.delete_post);
 router.put("/posts/:id", requireAuth, grantAccess("updateOwn", "post"), postController.update_post);
+router.put("/posts/:postid/like", requireAuth, grantAccess("updateOwn", "post"), postController.like_post);
+router.delete("/posts/:postid/unlike", requireAuth, postController.unlike_post);
+
 module.exports = router;

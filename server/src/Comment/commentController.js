@@ -26,11 +26,11 @@ const exclude = { __v: 0 };
 // Retrieving all comments on a post
 module.exports.all = async (req, res) => {
   try {
-    const post = await Comment.find({commented_on_post : req.params.postid}, exclude);
+    const comments = await Comment.find({commented_on_post : req.params.postid}, exclude);
     res.status(200).json({
       success: true,
-      numberOfRecords: post.length,
-      data: { post },
+      numberOfRecords: comments.length,
+      data: { comments },
     });
   } catch (error) {
     res.status(500).json({

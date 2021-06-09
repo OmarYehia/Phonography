@@ -13,29 +13,29 @@ const postSchema = new mongoose.Schema({
     },
     author: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: [true, "Author name is required"],
     },
     likes: [{
         type: Schema.Types.ObjectId,
-        ref: 'Like',
-        unique: true,
+        ref: 'user',
+        unique: [true, "User already liked it "],
     }],
     comments: [{
         type: Schema.Types.ObjectId,
-        ref: 'Comment',
+        ref: 'comment',
     }],
     // meta_data: {
 
     // },
     category: {
         type: Schema.Types.ObjectId,
-        ref: 'Category',
+        ref: 'category',
         required: [true, "Category is required"],
     },
     competition: {
         type: Schema.Types.ObjectId,
-        ref: 'Competition',
+        ref: 'competition',
     },
     image: {
         type: String,
