@@ -39,7 +39,7 @@ module.exports.all = async (req, res) => {
     }
 };
 
-// Create a post
+// Create a Like
 module.exports.create = async (req, res) => {
     try {
         const like = new Like();

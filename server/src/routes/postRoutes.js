@@ -44,7 +44,7 @@ const router = Router();
 router.get("/posts", requireAuth, grantAccess("readOwn", "post"), postController.all);
 router.get("/posts/:id", requireAuth, grantAccess("readOwn", "post"), postController.get_post);
 router.post("/posts", requireAuth, grantAccess("updateOwn", "post"), upload.single("postImage"), postController.create);
-router.delete("/posts/:postid/like/:likeid", requireAuth, postController.remove_like);
+router.delete("/posts/:postid/remove-like", requireAuth, postController.remove_like);
 router.delete("/posts/:postid/comment/:commentid", requireAuth, postController.remove_comment);
 router.delete("/posts/:id", requireAuth, postController.delete_post);
 router.put("/posts/:id", requireAuth, grantAccess("updateOwn", "post"), postController.update_post);

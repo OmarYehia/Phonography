@@ -103,22 +103,22 @@ module.exports.remove_like = async (req, res) => {
           console.log(err);
         } else {
           if (!result) throw Error("Not found")
+          const like = await Like.findOne({ liked_by: req.decodedToken.userId, liked_post: req.params.postid });
+          if (like) {
+            if (result.likes.includes(like._id)) {
+              Post.findOneAndUpdate(
+                req.params.postid,
+                { $pull: { likes: like._id } },
+                { new: true }
+              ).exec();
 
-          if (result.likes.includes(req.params.likeid)) {
+              like.remove();
 
-            Post.findOneAndUpdate(
-              req.params.postid,
-              { $pull: { likes: req.params.likeid } },
-              { new: true }
-            ).exec();
-
-            const like = await Like.findById(req.params.likeid);
-            like.remove();
-
-            res.status(202).json({
-              success: true,
-              data: { message: "Like Removed" },
-            })
+              res.status(202).json({
+                success: true,
+                data: { message: "Like Removed" },
+              })
+            }
           }
           else {
             res.status(400).json({
