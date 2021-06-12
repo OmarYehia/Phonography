@@ -11,7 +11,7 @@ const competitionSchema = new Schema({
   },
   sponsor: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: [true, "Sponsor is required"],
   },
   startDate: {
@@ -32,7 +32,7 @@ const competitionSchema = new Schema({
  competitors: [
     {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
     },
   ],
   prizes: [

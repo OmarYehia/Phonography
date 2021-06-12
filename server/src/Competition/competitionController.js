@@ -1,4 +1,5 @@
 const Competition = require('./Competition');
+const User = require('../User/User');
 
 const handleErrors = (err) => {
     let errors = {
@@ -44,7 +45,7 @@ const create_competition = async (req, res) => {
 }
 const get_all_competitions = async (req, res) => {
     try {
-      const competitions = await Competition.find().sort({ createdAt: -1 });
+      const competitions = await Competition.find().populate("sponsor").populate("competitors").sort({ createdAt: -1 });      
   
       res.status(200).json({
         success: true,
@@ -60,13 +61,14 @@ const get_all_competitions = async (req, res) => {
   };
   const get_competition_by_id = async (req, res) => {
     try {
-      const competition = await Competition.findById(req.params.id);
+      const competition = await Competition.findById(req.params.id).populate("sponsor").populate("competitors");
+      const sponsor = await User.findById(competition.sponsor)
   
       if (!competition) throw Error("Not found");
   
       res.status(200).json({
         success: true,
-        data: { competition },
+        data: { competition }
       });
     } catch (error) {
       if (error.kind === "ObjectId" || error.message === "Not found") {
@@ -114,7 +116,7 @@ const update_competition = async (req,res) => {
       req.params.id,
       { $set: { name, sponsor, startDate, endDate, prizes} },
       { new: true, runValidators: true }
-    );
+    ).populate("sponsor").populate("competitors");
     
     if (!competition) throw Error("Not found");
 
@@ -181,7 +183,7 @@ const join_competitor_into_competition = async (req,res) => {
 }
 const get_all_competitors_of_competition = async (req,res) => {
     try {
-      const competition = await Competition.findById(req.params.id);
+      const competition = await Competition.findById(req.params.id).populate("competitors");
   
       if (!competition) throw Error("Not found");
 
