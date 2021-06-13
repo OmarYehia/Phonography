@@ -42,6 +42,8 @@ const upload = multer({
 const router = Router();
 
 router.get("/posts", requireAuth, grantAccess("readOwn", "post"), postController.all);
+router.get("/posts/user/:userId", requireAuth, grantAccess("readOwn", "post"), postController.user_all);
+router.get("/posts/currentUser", requireAuth, grantAccess("readOwn", "post"), postController.currentUser_all);
 router.get("/posts/:id", requireAuth, grantAccess("readOwn", "post"), postController.get_post);
 router.post("/posts", requireAuth, grantAccess("updateOwn", "post"), upload.single("postImage"), postController.create);
 router.delete("/posts/:postid/remove-like", requireAuth, postController.remove_like);
