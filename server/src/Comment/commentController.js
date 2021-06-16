@@ -26,7 +26,7 @@ const exclude = { __v: 0 };
 // Retrieving all comments on a post
 module.exports.all = async (req, res) => {
   try {
-    const comments = await Comment.find({commented_on_post : req.params.postid}, exclude);
+    const comments = await Comment.find({commented_on_post : req.params.postid}, exclude).populate("author");
     res.status(200).json({
       success: true,
       numberOfRecords: comments.length,
@@ -73,7 +73,7 @@ module.exports.create = async (req, res) => {
 // Retrieve a single comment
 module.exports.get_comment = async (req, res) => {
     try {
-        const comment = await Comment.findById(req.params.commentid, exclude);
+        const comment = await Comment.findById(req.params.commentid, exclude).populate("author");
 
         if (!comment) throw Error("Not found");
 

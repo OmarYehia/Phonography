@@ -13,7 +13,7 @@ const commentSchema = new mongoose.Schema({
     },
     author: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: [true, "User id is required"],
     },
     commented_on_post: {

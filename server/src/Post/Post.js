@@ -19,7 +19,6 @@ const postSchema = new mongoose.Schema({
     likes: [{
         type: Schema.Types.ObjectId,
         ref: 'user',
-        unique: [true, "User already liked it "],
     }],
     comments: [{
         type: Schema.Types.ObjectId,
