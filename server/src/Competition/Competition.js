@@ -35,12 +35,12 @@ const competitionSchema = new Schema({
       ref: "user",
     },
   ],
-  prizes: [
+  prizes: 
     {
       type: String,
       
     },
-  ],
+  
   winner: {
     type: Schema.Types.ObjectId,
     ref: 'User',

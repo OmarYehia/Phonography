@@ -26,7 +26,7 @@ module.exports.all = async (req, res) => {
 
 module.exports.get_user = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id, exclude);
+    const user = await User.findById(req.params.id);
 
     if (!user) throw Error("Not found");
 
