@@ -31,7 +31,7 @@ const exclude = { __v: 0 };
 // Retrieving all posts
 module.exports.all = async (req, res) => {
   try {
-    const post = await Post.find({}, exclude)
+    const post = await Post.find({}, exclude).populate("author")
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
@@ -107,7 +107,8 @@ module.exports.create = async (req, res) => {
 // Retrieve a single post
 module.exports.get_post = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id, exclude)
+    console.log(req.params.id);
+    const post = await Post.findById(req.params.id, exclude).populate("author")
     if (!post) throw Error("Not found");
 
     res.status(200).json({
