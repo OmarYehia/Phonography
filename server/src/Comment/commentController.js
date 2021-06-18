@@ -45,7 +45,7 @@ module.exports.create = async (req, res) => {
   console.log(req.body);
   try {
     const comment = new Comment();
-    comment.author = req.body.author_id;
+    comment.author = req.decodedToken.userId;
     comment.commented_on_post = req.body.post_id;
     comment.body = req.body.body;
     comment.save()

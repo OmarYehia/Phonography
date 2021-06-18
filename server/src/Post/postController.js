@@ -59,6 +59,38 @@ module.exports.user_all = async (req, res) => {
     });
   }
 };
+module.exports.category_all = async (req, res) => {
+  console.log(req.params.categoryId);
+  try {
+    const post = await Post.find({ category: req.params.categoryId }, exclude);
+    res.status(200).json({
+      success: true,
+      numberOfRecords: post.length,
+      data: { post },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};
+module.exports.competition_all = async (req, res) => {
+  console.log(req.params.competitionId);
+  try {
+    const post = await Post.find({ competition: req.params.competitionId }, exclude);
+    res.status(200).json({
+      success: true,
+      numberOfRecords: post.length,
+      data: { post },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};
 
 // gets all posts of the current logged in user
 module.exports.currentUser_all = async (req, res) => {

@@ -43,6 +43,8 @@ const router = Router();
 
 router.get("/posts", requireAuth, grantAccess("readOwn", "post"), postController.all);
 router.get("/posts/user/:userId", postController.user_all);
+router.get("/posts/category/:categoryId", postController.category_all);
+router.get("/posts/competition/:competitionId", postController.competition_all);
 router.get(
   "/posts/currentUser",
   requireAuth,
