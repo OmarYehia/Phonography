@@ -6,6 +6,12 @@ const handleErrors = (err) => {
     image: "",
   };
 
+  // Duplicate names
+  if (err.code === 11000) {
+    errors["name"] = "This category name has already been taken";
+    return errors;
+  }
+
   // Validation errors
   if (
     err.message.includes("category validation failed") ||
@@ -41,6 +47,7 @@ module.exports.all = async (req, res) => {
 
 // Create a category
 module.exports.create = async (req, res) => {
+  console.log(req.file);
   try {
     const category = await Category.create({
       name: req.body.name,
