@@ -290,7 +290,7 @@ const add_prizes_for_competition = async (req,res) => {
   try{
     const competition = await Competition.findByIdAndUpdate(
       req.params.id,
-      {$push: {prizes: req.body.prizes}},
+      {$set: {prizes: req.body.prizes}},
       {new: true}
       );
 

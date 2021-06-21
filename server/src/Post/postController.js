@@ -28,7 +28,7 @@ const exclude = { __v: 0 };
 // Retrieving all posts
 module.exports.all = async (req, res) => {
   try {
-    const post = await Post.find({}, exclude);
+    const post = await Post.find({}, exclude).populate("author")
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
@@ -47,6 +47,38 @@ module.exports.user_all = async (req, res) => {
   console.log(req.params.userId);
   try {
     const post = await Post.find({ author: req.params.userId }, exclude);
+    res.status(200).json({
+      success: true,
+      numberOfRecords: post.length,
+      data: { post },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};
+module.exports.category_all = async (req, res) => {
+  console.log(req.params.categoryId);
+  try {
+    const post = await Post.find({ category: req.params.categoryId }, exclude);
+    res.status(200).json({
+      success: true,
+      numberOfRecords: post.length,
+      data: { post },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};
+module.exports.competition_all = async (req, res) => {
+  console.log(req.params.competitionId);
+  try {
+    const post = await Post.find({ competition: req.params.competitionId }, exclude);
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
@@ -105,7 +137,8 @@ module.exports.create = async (req, res) => {
 // Retrieve a single post
 module.exports.get_post = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id, exclude);
+    console.log(req.params.id);
+    const post = await Post.findById(req.params.id, exclude).populate("author")
     if (!post) throw Error("Not found");
 
     res.status(200).json({
@@ -128,6 +161,7 @@ module.exports.get_post = async (req, res) => {
 };
 
 module.exports.like_post = (req, res) => {
+  console.log("inside");
   Post.findById(req.params.postid, (err, post) => {
     if (post) {
       if (post.likes.includes(req.decodedToken.userId)) {
