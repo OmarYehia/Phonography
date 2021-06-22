@@ -2,6 +2,7 @@ const Like = require("../Like/Like");
 const Post = require("./Post");
 const Comment = require("../Comment/Comment");
 const mongoose = require("mongoose");
+const User = require("../User/User");
 
 const handleErrors = (err) => {
   let errors = {
@@ -28,7 +29,7 @@ const exclude = { __v: 0 };
 // Retrieving all posts
 module.exports.all = async (req, res) => {
   try {
-    const post = await Post.find({}, exclude).populate("author")
+    const post = await Post.find({}, exclude).populate("author category")
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
@@ -41,6 +42,27 @@ module.exports.all = async (req, res) => {
     });
   }
 };
+
+// Retrieving all my followings posts
+module.exports.following_all = async (req, res) => {
+  try {
+    let currentUserId = req.decodedToken.userId;
+    const user = await User.findById(currentUserId);
+    const posts = await Post.find({}, exclude).populate("author category")
+    let post = posts.filter(psot=> user.following.includes(psot.author._id) || currentUserId == psot.author._id)
+    res.status(200).json({
+      success: true,
+      numberOfRecords: post.length,
+      data: { post },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};
+
 
 // gets all the posts of a provided user id
 module.exports.user_all = async (req, res) => {
