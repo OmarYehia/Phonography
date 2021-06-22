@@ -41,7 +41,8 @@ const upload = multer({
 
 const router = Router();
 
-router.get("/posts", postController.all);
+router.get("/posts", requireAuth, grantAccess("readOwn", "post"), postController.all);
+router.get("/posts/following", requireAuth, grantAccess("readOwn", "post"), postController.following_all);
 router.get("/posts/user/:userId", postController.user_all);
 router.get("/posts/category/:categoryId", postController.category_all);
 router.get("/posts/competition/:competitionId", postController.competition_all);
