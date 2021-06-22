@@ -101,7 +101,7 @@ module.exports.update_category = async (req, res) => {
 
     const category = await Category.findOneAndUpdate(
       { _id: req.params.id },
-      { $set: { name, image } },
+      { $set: { name, image? } },
       { new: true, projection: exclude, runValidators: true }
     );
 
