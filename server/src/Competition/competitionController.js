@@ -261,10 +261,6 @@ const assign_winner_of_competition = async (req,res) => {
 
     if (!competition) throw Error("Not found"); 
 
-
-   // if(!(competition.competitors.includes(req.body.winner))) throw Error("competitor not found");
-   
-
      competition = await Competition.findByIdAndUpdate(
       req.params.id,
       { $set: { winner: req.body.winner, isEnded: true } },
@@ -282,12 +278,7 @@ const assign_winner_of_competition = async (req,res) => {
         success: false,
         errors: { message: "competition not found" },
       });
-    }else if(error.message === "competitor not found") {
-      res.status(400).json({
-        success: false,
-        errors: { message: "This competitor isnot joining this competition can't be winner" },
-      });
-     } else {
+    }else {
       res.status(500).json({
         success: false,
         errors: { message: error.message },
