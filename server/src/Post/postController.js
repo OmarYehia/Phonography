@@ -139,6 +139,7 @@ module.exports.create = async (req, res) => {
       author: req.decodedToken.userId,
       caption: req.body.caption,
       category: req.body.category,
+      competition: req.body.competition,
       image: req.file ? `${process.env.BASE_URL}/${req.file.path}` : null,
     });
 

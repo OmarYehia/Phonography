@@ -43,7 +43,7 @@ const competitionSchema = new Schema({
   
   winner: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
 },
 
 
