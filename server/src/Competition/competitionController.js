@@ -45,7 +45,7 @@ const create_competition = async (req, res) => {
 }
 const get_all_competitions = async (req, res) => {
     try {
-      const competitions = await Competition.find().populate("sponsor").populate("competitors").populate("winner").sort({ createdAt: -1 });      
+      const competitions = await Competition.find().populate("sponsor competitors winner").sort({ createdAt: -1 });      
   
       res.status(200).json({
         success: true,
@@ -61,7 +61,7 @@ const get_all_competitions = async (req, res) => {
   };
   const get_competition_by_id = async (req, res) => {
     try {
-      const competition = await Competition.findById(req.params.id).populate("sponsor").populate("competitors").populate("winner");
+      const competition = await Competition.findById(req.params.id).populate("sponsor competitors winner");
       const sponsor = await User.findById(competition.sponsor)
   
       if (!competition) throw Error("Not found");
@@ -183,7 +183,7 @@ const join_competitor_into_competition = async (req,res) => {
 }
 const get_all_competitors_of_competition = async (req,res) => {
     try {
-      const competition = await Competition.findById(req.params.id).populate("competitors").populate("winner");
+      const competition = await Competition.findById(req.params.id).populate("competitors winner");
   
       if (!competition) throw Error("Not found");
 
