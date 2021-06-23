@@ -45,6 +45,10 @@ const competitionSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'user',
 },
+ isEnded: {
+   type: Boolean,
+   default: false
+ },
 
 
 }, { timestamps: true });

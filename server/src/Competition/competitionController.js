@@ -262,12 +262,12 @@ const assign_winner_of_competition = async (req,res) => {
     if (!competition) throw Error("Not found"); 
 
 
-    if(!(competition.competitors.includes(req.body.winner))) throw Error("competitor not found");
+   // if(!(competition.competitors.includes(req.body.winner))) throw Error("competitor not found");
    
 
      competition = await Competition.findByIdAndUpdate(
       req.params.id,
-      { $set: { winner: req.body.winner } },
+      { $set: { winner: req.body.winner, isEnded: true } },
       { new: true, runValidators: true }
     );
     
