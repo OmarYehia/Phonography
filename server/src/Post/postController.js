@@ -116,7 +116,7 @@ module.exports.category_all = async (req, res) => {
 module.exports.competition_all = async (req, res) => {
   console.log(req.params.competitionId);
   try {
-    const post = await Post.find({ competition: req.params.competitionId }, exclude);
+    const post = await Post.find({ competition: req.params.competitionId }, exclude).populate("author category");
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
@@ -156,6 +156,7 @@ module.exports.create = async (req, res) => {
       caption: req.body.caption,
       category: req.body.category,
       meta_data: req.body.meta_data,
+      competition: req.body.competition,
       image: req.file ? `${process.env.BASE_URL}/${req.file.path}` : null,
     });
     console.log(post);

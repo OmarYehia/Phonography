@@ -45,7 +45,7 @@ const create_competition = async (req, res) => {
 }
 const get_all_competitions = async (req, res) => {
     try {
-      const competitions = await Competition.find().populate("sponsor").populate("competitors").sort({ createdAt: -1 });      
+      const competitions = await Competition.find().populate("sponsor competitors winner").sort({ createdAt: -1 });      
   
       res.status(200).json({
         success: true,
@@ -61,7 +61,7 @@ const get_all_competitions = async (req, res) => {
   };
   const get_competition_by_id = async (req, res) => {
     try {
-      const competition = await Competition.findById(req.params.id).populate("sponsor").populate("competitors");
+      const competition = await Competition.findById(req.params.id).populate("sponsor competitors winner");
       const sponsor = await User.findById(competition.sponsor)
   
       if (!competition) throw Error("Not found");
@@ -183,7 +183,7 @@ const join_competitor_into_competition = async (req,res) => {
 }
 const get_all_competitors_of_competition = async (req,res) => {
     try {
-      const competition = await Competition.findById(req.params.id).populate("competitors");
+      const competition = await Competition.findById(req.params.id).populate("competitors winner");
   
       if (!competition) throw Error("Not found");
 
@@ -257,13 +257,16 @@ const remove_competitor_from_competition = async (req,res) => {
 }
 const assign_winner_of_competition = async (req,res) => {
   try{
-    const competition = await Competition.findByIdAndUpdate(
+    let competition = await Competition.findById(req.params.id);
+
+    if (!competition) throw Error("Not found"); 
+
+     competition = await Competition.findByIdAndUpdate(
       req.params.id,
-      { $set: { winner: req.body.winner } },
+      { $set: { winner: req.body.winner, isEnded: true } },
       { new: true, runValidators: true }
     );
     
-    if (!competition) throw Error("Not found");
 
     res.status(202).json({
       Success: true,
@@ -275,7 +278,7 @@ const assign_winner_of_competition = async (req,res) => {
         success: false,
         errors: { message: "competition not found" },
       });
-    } else {
+    }else {
       res.status(500).json({
         success: false,
         errors: { message: error.message },
