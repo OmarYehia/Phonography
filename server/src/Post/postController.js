@@ -100,7 +100,7 @@ module.exports.category_all = async (req, res) => {
 module.exports.competition_all = async (req, res) => {
   console.log(req.params.competitionId);
   try {
-    const post = await Post.find({ competition: req.params.competitionId }, exclude);
+    const post = await Post.find({ competition: req.params.competitionId }, exclude).populate("author category");
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
