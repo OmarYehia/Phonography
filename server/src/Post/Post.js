@@ -24,9 +24,9 @@ const postSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'comment',
     }],
-    // meta_data: {
-
-    // },
+    meta_data: {
+        type: String,
+    },
     category: {
         type: Schema.Types.ObjectId,
         ref: 'category',

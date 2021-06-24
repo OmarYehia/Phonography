@@ -46,6 +46,7 @@ router.get("/posts/following", requireAuth, grantAccess("readOwn", "post"), post
 router.get("/posts/user/:userId", postController.user_all);
 router.get("/posts/category/:categoryId", postController.category_all);
 router.get("/posts/competition/:competitionId", postController.competition_all);
+router.get("/posts/model/:model", postController.model_all);
 router.get(
   "/posts/currentUser",
   requireAuth,
