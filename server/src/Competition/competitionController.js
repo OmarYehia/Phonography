@@ -1,5 +1,6 @@
 const Competition = require('./Competition');
 const User = require('../User/User');
+const Post = require('../Post/Post');
 
 const handleErrors = (err) => {
     let errors = {
@@ -213,6 +214,13 @@ const get_all_competitors_of_competition = async (req,res) => {
 const remove_competitor_from_competition = async (req,res) => {
   try{
     let competition = await Competition.findById(req.params.id);
+    const post = await Post.findOneAndUpdate(
+     { author: req.decodedToken.userId, competition:req.params.id},
+      { $unset: { competition:  ""  } },
+      { new: true, runValidators: true }
+      );
+      console.log(post);
+
 
     if (!competition) throw Error("Not found"); 
 

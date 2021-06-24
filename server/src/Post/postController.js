@@ -42,6 +42,22 @@ module.exports.all = async (req, res) => {
     });
   }
 };
+// Retrieving all posts shot by a mobile
+module.exports.model_all = async (req, res) => {
+  try {
+    const post = await Post.find({meta_data : req.params.model}, exclude).populate("author category")
+    res.status(200).json({
+      success: true,
+      numberOfRecords: post.length,
+      data: { post },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      errors: { message: error.message },
+    });
+  }
+};
 
 // Retrieving all my followings posts
 module.exports.following_all = async (req, res) => {
@@ -49,7 +65,7 @@ module.exports.following_all = async (req, res) => {
     let currentUserId = req.decodedToken.userId;
     const user = await User.findById(currentUserId);
     const posts = await Post.find({}, exclude).populate("author category")
-    let post = posts.filter(psot=> user.following.includes(psot.author._id) || currentUserId == psot.author._id)
+    let post = posts.filter(psot => user.following.includes(psot.author._id) || currentUserId == psot.author._id)
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
@@ -84,7 +100,7 @@ module.exports.user_all = async (req, res) => {
 module.exports.category_all = async (req, res) => {
   console.log(req.params.categoryId);
   try {
-    const post = await Post.find({ category: req.params.categoryId }, exclude);
+    const post = await Post.find({ category: req.params.categoryId }, exclude).populate("author category")
     res.status(200).json({
       success: true,
       numberOfRecords: post.length,
@@ -139,9 +155,11 @@ module.exports.create = async (req, res) => {
       author: req.decodedToken.userId,
       caption: req.body.caption,
       category: req.body.category,
+      meta_data: req.body.meta_data,
       competition: req.body.competition,
       image: req.file ? `${process.env.BASE_URL}/${req.file.path}` : null,
     });
+    console.log(post);
 
     res.status(201).json({
       success: true,
