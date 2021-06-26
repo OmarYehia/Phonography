@@ -99,9 +99,10 @@ module.exports.update_category = async (req, res) => {
     const name = req.body.name;
     const image = req.file ? `${process.env.BASE_URL}/${req.file.path}` : null;
 
+    const params = image ? { name, image } : { name };
     const category = await Category.findOneAndUpdate(
       { _id: req.params.id },
-      { $set: { name, image? } },
+      { $set: params },
       { new: true, projection: exclude, runValidators: true }
     );
 
