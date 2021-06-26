@@ -214,7 +214,7 @@ const get_all_competitors_of_competition = async (req,res) => {
 const remove_competitor_from_competition = async (req,res) => {
   try{
     let competition = await Competition.findById(req.params.id);
-    const post = await Post.findOneAndUpdate(
+    const post = await Post.updateMany(
      { author: req.decodedToken.userId, competition:req.params.id},
       { $unset: { competition:  ""  } },
       { new: true, runValidators: true }

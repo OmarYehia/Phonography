@@ -1,3 +1,4 @@
+const Post = require("../Post/Post");
 const Category = require("./Category");
 
 const handleErrors = (err) => {
@@ -138,6 +139,8 @@ module.exports.delete_category = async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
     if (!category) throw Error("Not found");
+    const posts = await Post.deleteMany({category: category._id});
+    
 
     res.status(202).json({
       success: true,
